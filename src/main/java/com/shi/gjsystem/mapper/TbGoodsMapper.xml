@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shi.gjsystem.mapper.TbGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.shi.gjsystem.pojo.TbGoods" >
+    <result column="Goodsinsp" property="goodsinsp" jdbcType="VARCHAR" />
+    <result column="Goods_name" property="goodsName" jdbcType="VARCHAR" />
+    <result column="Goods_no" property="goodsNo" jdbcType="VARCHAR" />
+    <result column="Audit_type" property="auditType" jdbcType="VARCHAR" />
+    <result column="Satus" property="satus" jdbcType="VARCHAR" />
+    <result column="Cbename" property="cbename" jdbcType="VARCHAR" />
+    <result column="Cbecodeinsp" property="cbecodeinsp" jdbcType="VARCHAR" />
+    <result column="Create_Time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <insert id="insert">
+    insert into tb_goods(Goodsinsp,Goods_name,Goods_no,Audit_type,Satus,Cbename,Cbecodeinsp,Create_Time)
+    value (#{goodsinsp},#{goodsName},#{goodsNo},#{auditType},#{satus},#{cbename},#{cbecodeinsp},#{createTime})
+  </insert>
+</mapper>

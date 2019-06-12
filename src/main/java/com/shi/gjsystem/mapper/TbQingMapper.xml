@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shi.gjsystem.mapper.TbQingMapper">
+  <resultMap id="BaseResultMap" type="com.shi.gjsystem.pojo.TbQing" >
+    <id column="Qing_no" property="qingNo" jdbcType="VARCHAR" />
+    <result column="Orders_no" property="ordersNo" jdbcType="VARCHAR" />
+    <result column="Waybill_no" property="waybillNo" jdbcType="VARCHAR" />
+    <result column="Pay_no" property="payNo" jdbcType="VARCHAR" />
+    <result column="Stauts" property="stauts" jdbcType="VARCHAR" />
+    <result column="Create_Time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <insert id="addqing">
+    insert into tb_qing(Qing_no,Orders_no,Waybill_no,Pay_no,Stauts,Create_Time)
+    value (#{qingNo},#{ordersNo},#{waybillNo},#{payNo},#{stauts},#{createTime})
+  </insert>
+  <!--人工审单，负面清单,清单查验-->
+  <select id="findtbQingList" resultMap="BaseResultMap">
+    select Qing_no,Orders_no,Waybill_no,Pay_no,Stauts,Create_Time
+    from tb_qing
+    where Stauts=#{stauts}
+  </select>
+  <!--清单删除-->
+  <delete id="deleteQing" parameterType="java.lang.String">
+    delete from tb_qing
+    where Qing_no=#{qingNo,jdbcType=VARCHAR}
+  </delete>
+  <!--清单放行-->
+  <update id="stautsByPrimaryKey">
+    update tb_qing set Stauts=#{stauts} where Qing_no=#{qingNo}
+  </update>
+  <!-- 通过条件分页查询，返回总记录数 -->
+  <select id="selectPageCount"  resultType="java.lang.Integer">
+    select count(1) from tb_qing
+  </select>
+  <!--删除多表数据-->
+  <delete id="deleteQingAll" parameterType="java.lang.String">
+    delete from tb_qing
+    where Qing_no=#{id,jdbcType=VARCHAR}
+  </delete>
+</mapper>

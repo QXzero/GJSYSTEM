@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shi.gjsystem.mapper.ZongMapper" >
+    <resultMap id="kb" type="com.shi.gjsystem.pojo.TbZong">
+        <id column="Qing_no" property="id"/>
+        <result  property="Status"  column="Stauts"/>
+        <result  property="Create_Time" column="Create_Time"/>
+        <association  property="ordersdetails" javaType="com.shi.gjsystem.pojo.TbOrdersdetails">
+            <id property="ordersNo" column="Orders_no"/>
+            <id column="OrdersDetails_no" property="ordersdetailsNo" jdbcType="VARCHAR" />
+            <result column="Goods_no" property="goodsNo" jdbcType="VARCHAR" />
+            <result column="Goods_name" property="goodsName" jdbcType="VARCHAR" />
+            <result column="Goods_price" property="goodsPrice" jdbcType="REAL" />
+        </association>
+        <association  property="tbWaybill" javaType="com.shi.gjsystem.pojo.TbWaybill">
+            <id column="Waybill_no" property="waybillNo" jdbcType="VARCHAR" />
+            <result column="Wlqycodeinsp" property="wlqycodeinsp" jdbcType="VARCHAR" />
+            <result column="Wlqyname" property="wlqyname" jdbcType="VARCHAR" />
+            <result column="Sender" property="sender" jdbcType="VARCHAR" />
+        </association>
+        <association  property="tbPay" javaType="com.shi.gjsystem.pojo.TbPay">
+            <id column="Pay_no" property="payNo" jdbcType="VARCHAR" />
+            <result column="Orders_no" property="ordersNo" jdbcType="VARCHAR" />
+            <result column="Zfcodeinsp" property="zfcodeinsp" jdbcType="VARCHAR" />
+            <result column="Zfname" property="zfname" jdbcType="VARCHAR" />
+        </association>
+
+    </resultMap>
+    <select id="geta" resultMap="kb">
+        select *
+        from tb_ordersdetails o,tb_pay p,tb_qing q,tb_waybill w,
+        (select Qing_no,orders_no,Waybill_no,Pay_no,Stauts,Create_Time from tb_qing where Stauts=#{b}) a
+        where a.orders_no=o.orders_no and
+        a.Waybill_no=w.Waybill_no and
+        a.Pay_no=w.Waybill_no AND
+         a.Qing_no=q.Qing_no
+    </select>
+
+    <select id="fingAllQingList" resultMap="kb">
+        select *
+        from tb_ordersdetails o,tb_pay p,tb_qing q,tb_waybill w,
+        (select Qing_no,Orders_no,Waybill_no,Pay_no,Stauts,Create_Time from tb_qing ) a
+        where a.Orders_no=o.Orders_no and
+        a.Waybill_no=w.Waybill_no and
+        a.Pay_no=p.Pay_no AND
+         a.Qing_no=q.Qing_no
+          order by id DESC
+        limit #{start},#{rows}
+    </select>
+
+    <select id="selectPageList" resultMap="kb">
+       select *
+        from tb_ordersdetails o,tb_pay p,tb_qing q,tb_waybill w,
+        (select Qing_no,orders_no,Waybill_no,Pay_no,Stauts,Create_Time from tb_qing ) a
+        where a.orders_no=o.orders_no and
+        a.Waybill_no=w.Waybill_no and
+        a.Pay_no=p.Pay_no AND
+         a.Qing_no=q.Qing_no
+          order by a.Qing_no DESC limit #{start},#{rows}
+    </select>
+
+</mapper>

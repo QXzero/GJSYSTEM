@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shi.gjsystem.mapper.TbOrdersMapper" >
+  <resultMap id="BaseResultMap" type="com.shi.gjsystem.pojo.TbOrders">
+    <id column="Orders_no" property="ordersNo" jdbcType="VARCHAR" />
+    <result column="Cbename" property="cbename" jdbcType="VARCHAR" />
+    <result column="Cbecodeinsp" property="cbecodeinsp" jdbcType="VARCHAR" />
+    <result column="Goods_number" property="goodsNumber" jdbcType="INTEGER" />
+    <result column="User_name" property="userName" jdbcType="VARCHAR" />
+    <result column="Total_Money" property="totalMoney" jdbcType="REAL" />
+    <result column="Create_Time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="findByOrderNo" resultMap="BaseResultMap">
+    select Orders_no,Cbename,Cbecodeinsp,Goods_number,User_name,Total_Money,Create_Time
+    from tb_orders
+    where Orders_no=#{ordersNo}
+  </select>
+</mapper>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="stylesheet" href="../static/css/font.css">
+    <link rel="stylesheet" href="../static/css/xadmin.css">
+    <script src="../static/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/js/xadmin.js"></script>
+</head>
+
+<body>
+<div class="x-nav">
+            <span class="layui-breadcrumb">
+                <a href="">首页</a>
+                <a href="">演示</a>
+                <a><cite>导航元素</cite></a>
+            </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <button class="layui-btn layui-btn-danger" onclick="delAll()">
+                        <i class="layui-icon"></i>批量删除</button>
+                    <button class="layui-btn" onclick="xadmin.open('添加用户','./order-add',800,600)">
+                        <i class="layui-icon"></i>添加</button></div>
+                <table class="layui-hide" id="test" lay-filter="demo"></table>
+                <script type="text/html" id="barDemo">
+                    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+                    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="notgo2">禁止出境</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="none">
+    layui.use('table', function(){
+        var table = layui.table;
+        //渲染
+        table.render({
+            elem: '#test'  //绑定table表格
+            ,height: 450
+            ,url: '/notgolist' //后台springmvc接收路径
+            ,page:true    //true表示分页
+            /* page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+             layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                 //,curr: 5 //设定初始在第 5 页
+                 ,groups: 3 //只显示 1 个连续页码
+                 ,first: true //不显示首页
+                 ,last: true //不显示尾页
+              }*/
+//            ,where:{rows:limit} //传参数
+            ,limit: 10
+            ,id:'contenttable'
+            ,toolbar: '#toolbarDemo'
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'qingNo', title:'清单编号', width:100, fixed: 'left', unresize: true, sort: true}
+                ,{field:'ordersNo', title:'订单编号', width:100, fixed: 'left', unresize: true, sort: true}
+                ,{field:'waybillNo', title:'运单编号', width:100, fixed: 'left', unresize: true, sort: true}
+                ,{field:'payNo', title:'支付单号', width:100, fixed: 'left', unresize: true, sort: true}
+                ,{field:'stauts', title:'状态码', width:100, fixed: 'left', unresize: true, sort: true}
+                ,{field:'createTime', title:'创建时间',templet: function (d) {
+                        return layui.laytpl.toDateString(d.createTime);} , width:180, fixed: 'left', unresize: true, sort: true}
+                ,{field:'', title:'操作',toolbar:"#barDemo", width:350, fixed: 'left', unresize: true, sort: true}
+            ]]
+        });
+
+        // 日期格式处理
+        layui.laytpl.toDateString = function (d, format) {
+            var date = new Date(d || new Date())
+                , ymd = [
+                this.digit(date.getFullYear(), 4)
+                , this.digit(date.getMonth() + 1)
+                , this.digit(date.getDate())
+            ]
+                , hms = [
+                this.digit(date.getHours())
+                , this.digit(date.getMinutes())
+                , this.digit(date.getSeconds())
+            ];
+
+            format = format || 'yyyy-MM-dd HH:mm:ss';
+
+            return format.replace(/yyyy/g, ymd[0])
+                .replace(/MM/g, ymd[1])
+                .replace(/dd/g, ymd[2])
+                .replace(/HH/g, hms[0])
+                .replace(/mm/g, hms[1])
+                .replace(/ss/g, hms[2]);
+        };
+        //数字前置补零
+        layui.laytpl.digit = function (num, length, end) {
+            var str = '';
+            num = String(num);
+            length = length || 2;
+            for (var i = num.length; i < length; i++) {
+                str += '0';
+            }
+            return num < Math.pow(10, length) ? str + (num | 0) : num;
+        };
+
+
+        //监听表格行点击
+        table.on('tr', function(obj){
+            console.log(obj)
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(test)', function(obj){
+            console.log(obj)
+        });
+
+        //监听表格单选框选择
+        table.on('radio(test2)', function(obj){
+            console.log(obj)
+        });
+
+        //监听单元格编辑
+        table.on('edit(test2)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+
+        });
+
+        //监听工具条
+        table.on('tool(demo)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                //layer.msg('ID：'+ data.id + ' 的查看操作');
+                layer.alert( JSON.stringify(data));
+            } else if(obj.event === 'del')
+            {
+
+                layer.confirm('真的删除行么', function(index){
+                    alert(data.qingNo);
+                    $.ajax({
+                        url: "/delqing",
+                        type: "POST",
+                        data: {"qingNo": data.qingNo},
+                        dataType: "json",
+                        success: function (data)
+                        {
+                            if(data>=1)
+                            {
+                                obj.del();
+                                layer.close(index);
+                                layer.msg("删除成功");
+                            }
+                        },
+                        error: function (data) {
+                            layer.msg("删除失败");
+                        }
+                    });
+                });
+            }
+            else  if (obj.event === 'notgo2')
+            {
+                layer.confirm('真的禁止出境么', function(index) {
+                    $.ajax({
+                        url: "/notgoqing2",
+                        type: "POST",
+                        data: {"qingNo": data.qingNo},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data >= 1) {
+                                obj.del();
+                                layer.close(index);
+                                layer.msg("禁止出境成功");
+                            }
+                        },
+                        error: function (data) {
+                            layer.msg("禁止出境失败");
+                        }
+                    });
+                });
+            }
+            else  if (obj.event === 'fangxing')
+            {
+                layer.confirm('真的放行么', function(index) {
+                    $.ajax({
+                        url: "/fangxing",
+                        type: "POST",
+                        data: {"qingNo": data.qingNo},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data >= 1) {
+                                obj.del();
+                                layer.close(index);
+                                layer.msg("放行成功");
+                            }
+                        },
+                        error: function (data) {
+                            layer.msg("放行失败");
+                        }
+                    });
+                });
+            }
+
+            else if(obj.event === 'edit')
+            {
+                //layer.alert('编辑行：<br>'+ JSON.stringify(data))
+                layer.prompt({
+                    formType: 2
+                    ,value: JSON.stringify(data)
+                }, function(value, index) {
+                    EidtUv(data, value, index, obj);
+                });
+            }
+        });
+
+        var $ = layui.jquery, active = {
+            getCheckData: function(){//获取选中数据
+                var checkStatus = table.checkStatus('test')
+                    ,data = checkStatus.data;
+                layer.alert(JSON.stringify(data));
+            }
+            ,getCheckLength: function(){//获取选中数目
+                var checkStatus = table.checkStatus('test')
+                    ,data = checkStatus.data;
+                layer.msg('选中了：'+ data.length + ' 个');
+            }
+            ,isAll: function(){验证是否全选
+                var checkStatus = table.checkStatus('test');
+                layer.msg(checkStatus.isAll ? '全选': '未全选')
+            }
+            ,parseTable: function(){
+                table.init('parse-table-demo', {
+                    limit: 3
+                });
+            }
+            ,add: function(){
+                table.addRow('test')
+            }
+            ,delete: function(){
+                layer.confirm('确认删除吗？', function(index){
+                    table.deleteRow('test')
+                    layer.close(index);
+                });
+            }
+            ,reload:function () {
+                var keyWord=$("#keyWord").val();
+                var keyType=$("#key_type option:selected").val();
+                table.reload('contenttable',{
+                    where:{keyWord:keyWord,keyType:keyType}
+                });
+            }
+        };
+        $('i').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        $('.layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+</html>
